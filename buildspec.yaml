@@ -1,0 +1,19 @@
+--- 
+version: 0.2
+phases: 
+  install: 
+    runtime-versions: 
+      dotnet: 2.2
+    pre_build: 
+    commands:
+      - "echo Current folder:"
+      - "pwd"
+      - "dotnet clean src/personalWebsiteBackend/personalWebsiteBackend.csproj"
+      - "dotnet restore src/personalWebsiteBackend/personalWebsiteBackend.csproj"
+  build: 
+    commands: 
+      - "dotnet publish -c release -o ../../build_output src/personalWebsiteBackend/personalWebsiteBackend.csproj"
+artifacts:
+  files:
+    - '**/*'
+  base-directory: 'build_output'

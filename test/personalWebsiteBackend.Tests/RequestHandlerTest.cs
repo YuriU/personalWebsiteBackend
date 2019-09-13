@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-
+using Amazon.Lambda.APIGatewayEvents;
 using Xunit;
 using Amazon.Lambda.Core;
 using Amazon.Lambda.TestUtilities;
@@ -18,11 +18,11 @@ namespace personalWebsiteBackend.Tests
         {
 
             // Invoke the lambda function and confirm the string was upper cased.
-            var function = new Function();
+            var requestHandler = new RequestHandler();
             var context = new TestLambdaContext();
-            var upperCase = function.FunctionHandler("hello world", context);
+            var response = requestHandler.HandleRequest(new APIGatewayProxyRequest(), context);
 
-            Assert.Equal("HELLO WORLD", upperCase);
+            Assert.Equal("{\"message\":\"Hello world\"}", response.Body);
         }
     }
 }

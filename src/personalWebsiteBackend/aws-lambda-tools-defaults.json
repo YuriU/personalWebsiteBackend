@@ -8,12 +8,12 @@
     "All the command line options for the Lambda command can be specified in this file."
   ],
 
-  "profile":"",
-  "region" : "",
+  "profile":"default",
+  "region" : "eu-central-1",
   "configuration" : "Release",
   "framework" : "netcoreapp2.1",
   "function-runtime":"dotnetcore2.1",
   "function-memory-size" : 256,
   "function-timeout" : 30,
-  "function-handler" : "personalWebsiteBackend::personalWebsiteBackend.Function::FunctionHandler"
+  "function-handler" : "personalWebsiteBackend::personalWebsiteBackend.RequestHandler::HandleRequest"
 }

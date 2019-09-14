@@ -25,7 +25,7 @@ namespace personalWebsiteBackend
         {
             var result = new Dictionary<string, string>();
             result["message"] = "Hello world";
-            result["version"] = "1.0";
+            result["version"] = "2.0";
             string body = JsonConvert.SerializeObject(result);
 
             var response = new APIGatewayProxyResponse

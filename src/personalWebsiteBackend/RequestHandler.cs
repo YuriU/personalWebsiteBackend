@@ -35,7 +35,8 @@ namespace personalWebsiteBackend
                 Headers = new Dictionary<string, string>
                 { 
                     { "Content-Type", "application/json" }, 
-                    { "Access-Control-Allow-Origin", "*" } 
+                    { "Access-Control-Allow-Origin", "*" },
+                    { "Content-Disposition", "attachment; filename=\"file.json\"" }
                 }
             };
 

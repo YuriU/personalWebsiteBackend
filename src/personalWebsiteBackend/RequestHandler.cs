@@ -16,7 +16,7 @@ namespace personalWebsiteBackend
     {
         
         /// <summary>
-        /// A simple function that takes a string and does a ToUpper
+        /// Function which returns 
         /// </summary>
         /// <param name="input"></param>
         /// <param name="context"></param>
@@ -25,6 +25,7 @@ namespace personalWebsiteBackend
         {
             var result = new Dictionary<string, string>();
             result["message"] = "Hello world";
+            result["version"] = "1.0";
             string body = JsonConvert.SerializeObject(result);
 
             var response = new APIGatewayProxyResponse

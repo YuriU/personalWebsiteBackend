@@ -14,13 +14,13 @@ namespace personalWebsiteBackend.Tests
     public class FunctionTest
     {
         [Fact]
-        public void TestToUpperFunction()
+        public async Task TestHandleRequest()
         {
 
             // Invoke the lambda function and confirm the string was upper cased.
             var requestHandler = new RequestHandler();
             var context = new TestLambdaContext();
-            var response = requestHandler.HandleRequest(new APIGatewayProxyRequest(), context);
+            var response = await requestHandler.HandleRequest(new APIGatewayProxyRequest(), context);
 
             Assert.Equal("{\"message\":\"Hello world\"}", response.Body);
         }

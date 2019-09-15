@@ -8,9 +8,13 @@ using System.Net;
 using Amazon.Lambda.Core;
 using Amazon.S3;
 using Amazon.S3.Model;
-using System.IO;
 using Amazon;
 using personalWebsiteBackend.AppConfiguration;
+using personalWebsiteBackend.Utils;
+using personalWebsiteBackend.Download;
+
+using Amazon.DynamoDBv2;
+using Amazon.DynamoDBv2.DataModel;
 
 // Assembly attribute to enable the Lambda function's JSON input to be converted into a .NET class.
 [assembly: LambdaSerializer(typeof(Amazon.Lambda.Serialization.Json.JsonSerializer))]
@@ -18,17 +22,18 @@ using personalWebsiteBackend.AppConfiguration;
 namespace personalWebsiteBackend
 {
     public class RequestHandler
-    {
-        private static readonly RegionEndpoint bucketRegion = RegionEndpoint.EUCentral1; 
+    {        
+        private IFileDownloader _downloader;
 
-        private static IAmazonS3 client;
+        private IDownloadTracker _downloadTracker;
 
-        private readonly SourceBucketConfiguration sourceBucketConfiguration;
+        private SourceBucketConfiguration sourceBucketConfiguration;
 
         public RequestHandler() 
         {
             sourceBucketConfiguration = ConfigurationReader.GetSourceBucketConfiguration();
-            client = new AmazonS3Client(bucketRegion);
+            _downloader = new S3FileDownloader(new AmazonS3Client());
+            _downloadTracker = new DownloadTracker(new AmazonDynamoDBClient(), ConfigurationReader.GetDatabaseConfiguration());
         }
 
         /// <summary>
@@ -39,69 +44,27 @@ namespace personalWebsiteBackend
         /// <returns></returns>
         public async Task<APIGatewayProxyResponse> HandleRequest(APIGatewayProxyRequest request, ILambdaContext context)
         {
-            return await ReturnDownloadedFile();
+            return await ReturnDownloadedFile(sourceBucketConfiguration.BucketName, sourceBucketConfiguration.FileName);
+        }
 
-            var buckets = await client.ListObjectsAsync(sourceBucketConfiguration.BucketName, "*");
-            /*var result = new Dictionary<string, string>();
-            result["message"] = "Hello world";
-            result["version"] = "2.0";
-             */
+        public async Task<APIGatewayProxyResponse> ReturnDownloadedFile(string bucketName, string fileName)
+        {
+            var fileContent = await _downloader.DownloadBase64String(bucketName, fileName);
 
-            string body = JsonConvert.SerializeObject(buckets);
+            await _downloadTracker.TrackDownload(fileName);
 
-            var response = new APIGatewayProxyResponse
+            return new APIGatewayProxyResponse
             {
                 StatusCode = (int)HttpStatusCode.OK,
-                Body = body,
+                Body = fileContent,
                 Headers = new Dictionary<string, string>
                 { 
-                    { "Content-Type", "application/json" }, 
+                    { "Content-Type", "application/msword" }, 
                     { "Access-Control-Allow-Origin", "*" },
-                    //{ "Content-Disposition", "attachment; filename=\"file.json\"" }
-                }
+                    { "Content-Disposition", $"attachment; filename=\"{fileName}\"" }
+                },
+                IsBase64Encoded = true
             };
-
-            return response;
-        }
-
-        public async Task<APIGatewayProxyResponse> ReturnDownloadedFile()
-        {
-            var request = new GetObjectRequest
-            {
-                BucketName = sourceBucketConfiguration.BucketName,
-                Key = sourceBucketConfiguration.FileName,
-            };
-
-            using (GetObjectResponse getObjectResponse = await client.GetObjectAsync(request))
-            {
-                var response = new APIGatewayProxyResponse
-                {
-                    StatusCode = (int)HttpStatusCode.OK,
-                    Body = ConvertToBase64(getObjectResponse.ResponseStream),
-                    Headers = new Dictionary<string, string>
-                    { 
-                        { "Content-Type", "application/msword" }, 
-                        { "Access-Control-Allow-Origin", "*" },
-                        { "Content-Disposition", $"attachment; filename=\"{sourceBucketConfiguration.FileName}\"" }
-                    },
-                    IsBase64Encoded = true
-                };
-
-                return response;
-            }
-        }
-
-        public static string ConvertToBase64(Stream stream)
-        {
-            byte[] bytes;
-            using (var memoryStream = new MemoryStream())
-            {
-                stream.CopyTo(memoryStream);
-                bytes = memoryStream.ToArray();
-            }
-
-            string base64 = Convert.ToBase64String(bytes);
-            return base64;
         }
     }
 }

@@ -23,15 +23,22 @@ namespace personalWebsiteBackend
 {
     public class RequestHandler
     {        
-        private IFileDownloader _downloader;
+        private readonly IFileDownloader _downloader;
 
-        private IDownloadTracker _downloadTracker;
+        private readonly IDownloadTracker _downloadTracker;
 
-        private SourceBucketConfiguration sourceBucketConfiguration;
+        private readonly SourceBucketConfiguration _sourceBucketConfiguration;
 
+        public RequestHandler(IFileDownloader downloader, IDownloadTracker downloadTracker, SourceBucketConfiguration sourceBucketConfiguration)
+        {
+            _downloader = downloader;
+            _downloadTracker = downloadTracker;
+            _sourceBucketConfiguration = sourceBucketConfiguration;
+        }
+        
         public RequestHandler() 
         {
-            sourceBucketConfiguration = ConfigurationReader.GetSourceBucketConfiguration();
+            _sourceBucketConfiguration = ConfigurationReader.GetSourceBucketConfiguration();
             _downloader = new S3FileDownloader(new AmazonS3Client());
             _downloadTracker = new DownloadTracker(new AmazonDynamoDBClient(), ConfigurationReader.GetDatabaseConfiguration());
         }
@@ -44,7 +51,7 @@ namespace personalWebsiteBackend
         /// <returns></returns>
         public async Task<APIGatewayProxyResponse> HandleRequest(APIGatewayProxyRequest request, ILambdaContext context)
         {
-            return await ReturnDownloadedFile(sourceBucketConfiguration.BucketName, sourceBucketConfiguration.FileName);
+            return await ReturnDownloadedFile(_sourceBucketConfiguration.BucketName, _sourceBucketConfiguration.FileName);
         }
 
         public async Task<APIGatewayProxyResponse> ReturnDownloadedFile(string bucketName, string fileName)

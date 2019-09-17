@@ -23,7 +23,7 @@ namespace personalWebsiteBackend.Download
                 BucketName = bucketName,
                 Key = fileName,
             };
-
+            
             using (GetObjectResponse getObjectResponse = await _s3Client.GetObjectAsync(request))
             {
                 return getObjectResponse.ResponseStream.ToBase64String();

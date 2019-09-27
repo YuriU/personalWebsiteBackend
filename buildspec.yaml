@@ -17,7 +17,7 @@ phases:
     commands: 
       - "cd build_output"
       - "zip lambda.zip *"
-      - "aws lambda update-function-code --function-name mytestlambda --zip-file ./lambda.zip"
+      - "aws lambda update-function-code --function-name mytestlambda --zip-file fileb://lambda.zip"
 artifacts:
   files:
     - '**/*'

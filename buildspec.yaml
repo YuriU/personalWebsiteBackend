@@ -13,7 +13,7 @@ phases:
   build: 
     commands: 
       - "dotnet publish -c release -o ../../build_output src/personalWebsiteBackend/personalWebsiteBackend.csproj"
-  postbuild:
+  post_build:
     commands: 
       - "cd build_output"
       - "zip lambda.zip *"

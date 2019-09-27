@@ -23,12 +23,9 @@ namespace personalWebsiteBackend
 {
     public class RequestHandler
     {        
-       //private readonly IFileDownloader _downloader;
+        private readonly IFileDownloader _downloader;
 
-        //private readonly IDownloadTracker _downloadTracker;
-
-
-
+        private readonly IDownloadTracker _downloadTracker;
 
         private readonly SourceBucketConfiguration _sourceBucketConfiguration;
 

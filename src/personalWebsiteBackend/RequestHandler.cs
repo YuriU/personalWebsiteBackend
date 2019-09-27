@@ -25,7 +25,7 @@ namespace personalWebsiteBackend
     {        
         private readonly IFileDownloader _downloader;
 
-        private readonly IDownloadTracker _downloadTracker;
+        //private readonly IDownloadTracker _downloadTracker;
 
         private readonly SourceBucketConfiguration _sourceBucketConfiguration;
 

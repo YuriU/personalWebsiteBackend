@@ -51,6 +51,18 @@ namespace personalWebsiteBackend
         /// <returns></returns>
         public async Task<APIGatewayProxyResponse> HandleRequest(APIGatewayProxyRequest request, ILambdaContext context)
         {
+            var json = JsonConvert.SerializeObject(request);
+            return new APIGatewayProxyResponse
+            {
+                StatusCode = (int)HttpStatusCode.OK,
+                Body = json,
+                Headers = new Dictionary<string, string>
+                { 
+                    { "Content-Type", "application/json" }, 
+                    { "Access-Control-Allow-Origin", "*" },
+                },
+            };
+
             return await ReturnDownloadedFile(_sourceBucketConfiguration.BucketName, _sourceBucketConfiguration.FileName);
         }
 

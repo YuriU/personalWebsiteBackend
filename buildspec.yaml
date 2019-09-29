@@ -13,6 +13,11 @@ phases:
   build: 
     commands: 
       - "dotnet publish -c release -o ../../build_output src/personalWebsiteBackend/personalWebsiteBackend.csproj"
+  post_build:
+    commands: 
+      - "cd build_output"
+      - "zip lambda.zip *"
+      - "aws lambda update-function-code --function-name $LAMBDA_NAME --zip-file fileb://lambda.zip"
 artifacts:
   files:
     - '**/*'

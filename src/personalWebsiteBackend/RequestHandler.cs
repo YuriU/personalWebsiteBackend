@@ -51,19 +51,39 @@ namespace personalWebsiteBackend
         /// <returns></returns>
         public async Task<APIGatewayProxyResponse> HandleRequest(APIGatewayProxyRequest request, ILambdaContext context)
         {
-            var json = JsonConvert.SerializeObject(request);
-            return new APIGatewayProxyResponse
-            {
-                StatusCode = (int)HttpStatusCode.OK,
-                Body = json,
-                Headers = new Dictionary<string, string>
-                { 
-                    { "Content-Type", "application/json" }, 
-                    { "Access-Control-Allow-Origin", "*" },
-                },
-            };
+            var cmd = request.QueryStringParameters["cmd"];
 
-            return await ReturnDownloadedFile(_sourceBucketConfiguration.BucketName, _sourceBucketConfiguration.FileName);
+            if(cmd == "echo")
+            {
+                // Return request as we get it
+                return new APIGatewayProxyResponse
+                {
+                    StatusCode = (int)HttpStatusCode.OK,
+                    Body = JsonConvert.SerializeObject(request),
+                    Headers = new Dictionary<string, string>
+                    { 
+                        { "Content-Type", "application/json" }, 
+                        { "Access-Control-Allow-Origin", "*" },
+                    },
+                };
+            }
+            else if(cmd == "requestDownload" && request.HttpMethod == "POST")
+            {
+                return await ReturnDownloadedFile(_sourceBucketConfiguration.BucketName, _sourceBucketConfiguration.FileName);
+            }
+            else
+            {
+                return new APIGatewayProxyResponse
+                {
+                    StatusCode = (int)HttpStatusCode.BadRequest,
+                    Body = "Invalid request",
+                    Headers = new Dictionary<string, string>
+                    { 
+                        { "Content-Type", "text/plain" }, 
+                        { "Access-Control-Allow-Origin", "*" },
+                    }
+                };
+            }
         }
 
         public async Task<APIGatewayProxyResponse> ReturnDownloadedFile(string bucketName, string fileName)

@@ -100,6 +100,7 @@ namespace personalWebsiteBackend
                 { 
                     { "Content-Type", "application/msword" }, 
                     { "Access-Control-Allow-Origin", "*" },
+                    { "Access-Control-Expose-Headers", "Content-Disposition" },
                     { "Content-Disposition", $"attachment; filename=\"{fileName}\"" }
                 },
                 IsBase64Encoded = true

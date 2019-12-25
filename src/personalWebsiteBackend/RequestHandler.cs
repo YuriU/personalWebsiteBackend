@@ -51,7 +51,7 @@ namespace personalWebsiteBackend
         /// <returns></returns>
         public async Task<APIGatewayProxyResponse> HandleRequest(APIGatewayProxyRequest request, ILambdaContext context)
         {
-            var cmd = request.QueryStringParameters["cmd"];
+            var cmd = request.QueryStringParameters.GetSafe("cmd");
 
             if(cmd == "echo")
             {

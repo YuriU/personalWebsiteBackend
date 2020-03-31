@@ -30,7 +30,11 @@ namespace personalWebsiteBackend.Tests
             // Invoke the lambda function and confirm the string was upper cased.
             var requestHandler = new RequestHandler(downloader, tracker, config);
             var context = new TestLambdaContext();
-            var response = await requestHandler.HandleRequest(new APIGatewayProxyRequest(), context);
+            var response = await requestHandler.HandleRequest(new APIGatewayProxyRequest()
+            {
+                QueryStringParameters = new Dictionary<string, string>() { {"cmd", "requestDownload" }},
+                HttpMethod = "POST"
+            }, context);
 
             Assert.Equal("Response", response.Body);
         }
